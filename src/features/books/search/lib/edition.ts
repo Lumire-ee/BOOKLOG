@@ -97,6 +97,14 @@ export function groupByBaseTitle(
       }
       return diff > 0 ? current : prev;
     });
+
+    if (!best.pageCount) {
+      const found = variants.find((v) => v.pageCount && v.pageCount > 0);
+      if (found?.pageCount) {
+        best.pageCount = found.pageCount;
+      }
+    }
+
     winners.push(best);
   }
 

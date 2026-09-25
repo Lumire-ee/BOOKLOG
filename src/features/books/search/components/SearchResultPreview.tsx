@@ -33,6 +33,7 @@ export default function SearchResultPreview({
             {book.publisher
               ? `${book.author} · ${book.publisher}`
               : book.author}
+            {book.pageCount ? ` · ${book.pageCount}쪽` : ""}
           </p>
         </div>
 
