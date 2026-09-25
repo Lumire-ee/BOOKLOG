@@ -19,10 +19,19 @@ type Props = {
   onStatusChange: (status: EditableUserBookFields["status"]) => void;
 };
 
+const STATUS_CONFIG = {
+  to_read: { label: "읽기 전", variant: "to_read" as const, icon: Clock },
+  reading: { label: "읽는 중", variant: "reading" as const, icon: BookOpen },
+  completed: { label: "완독", variant: "completed" as const, icon: CircleCheck },
+  quit: { label: "중단", variant: "quit" as const, icon: CircleSlash },
+} as const;
+
 export default function BookDetailStatusSection({
   status,
   onStatusChange,
 }: Props) {
+  const currentStatus = STATUS_CONFIG[status];
+
   return (
     <BookDetailFormRow>
       <BookDetailFormLabel
@@ -35,7 +44,14 @@ export default function BookDetailStatusSection({
       <BookDetailFormContent>
         <Select value={status} onValueChange={onStatusChange}>
           <SelectTrigger id="status" className="h-10 w-full px-3">
-            <SelectValue placeholder="상태" />
+            <SelectValue placeholder="상태">
+              {currentStatus ? (
+                <Badge variant={currentStatus.variant}>
+                  <currentStatus.icon />
+                  {currentStatus.label}
+                </Badge>
+              ) : null}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="to_read">
