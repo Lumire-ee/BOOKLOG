@@ -15,7 +15,7 @@ export async function registerBook(
   }
 
   const { data, error } = await supabase.rpc("add_book_to_user", {
-    p_isbn: book.isbn,
+    p_isbn: book.isbn ?? null,
     p_title: book.title,
     p_author: book.author,
     p_thumbnail: book.image ?? null,

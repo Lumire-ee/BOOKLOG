@@ -18,7 +18,11 @@ export default function SearchResultRow({
     <BookListRow
       thumbnail={book.image}
       title={book.title}
-      author={book.author}
+      author={
+        book.publisher
+          ? `${book.author} · ${book.publisher}`
+          : book.author
+      }
       onHover={onHover}
       right={
         <Button variant="iconGhost" size="sm" onClick={onSelect}>

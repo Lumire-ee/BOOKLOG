@@ -1,4 +1,4 @@
-﻿import { THUMB_SIZES } from "@/shared/constants/thumbnail";
+import { THUMB_SIZES } from "@/shared/constants/thumbnail";
 import { toProxiedThumbnailSrc } from "@/features/books/lib/thumbnailProxy";
 import type { SearchBook } from "../lib/types";
 
@@ -30,7 +30,9 @@ export default function SearchResultPreview({
           </h2>
 
           <p className="typo-body-sm text-text-secondary line-clamp-1">
-            {book.author}
+            {book.publisher
+              ? `${book.author} · ${book.publisher}`
+              : book.author}
           </p>
         </div>
 

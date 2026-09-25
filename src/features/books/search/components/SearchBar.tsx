@@ -23,7 +23,12 @@ export default function SearchBar({
         placeholder="책 제목 또는 저자를 입력해주세요."
         value={query}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && onSubmit()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            if (e.nativeEvent.isComposing) return;
+            onSubmit();
+          }
+        }}
         onFocus={onFocus}
       />
       <Button
