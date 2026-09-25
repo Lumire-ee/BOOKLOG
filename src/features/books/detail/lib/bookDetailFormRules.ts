@@ -62,9 +62,21 @@ export function applyStatusChange(
 ): EditableUserBookFields {
   const next: EditableUserBookFields = { ...prev, status: nextStatus };
 
-  if (isDoneStatus(nextStatus)) {
-    if (!next.end_date) next.end_date = todayKST();
-  } else {
+  if (nextStatus === "reading") {
+    // 1. reading이 되는 시점에 start_date가 null이면 현재 일자 자동 입력
+    if (!next.start_date) {
+      next.start_date = todayKST();
+    }
+    next.end_date = null;
+  } else if (isDoneStatus(nextStatus)) {
+    // 2. 완독(completed) 또는 중단(quit) 상태가 될 때 시작일과 종료일 보장
+    if (!next.start_date) {
+      next.start_date = todayKST();
+    }
+    if (!next.end_date) {
+      next.end_date = todayKST();
+    }
+  } else if (nextStatus === "to_read") {
     next.end_date = null;
   }
 
@@ -79,9 +91,33 @@ export function applyCurrentPageChange(
   const next: EditableUserBookFields = { ...prev, current_page: nextPage };
   const cp = nextPage ?? 0;
 
-  if (totalPageCount !== null && cp >= totalPageCount) {
+  // 1. 현재 페이지 쪽수가 1 이상인 경우 시작일 자동 입력 및 reading 상태 전환
+  if (cp >= 1) {
+    if (!next.start_date) {
+      next.start_date = todayKST();
+    }
+    if (next.status === "to_read") {
+      next.status = "reading";
+    }
+  }
+
+  // 2. 읽은 페이지 = 전체 페이지 (완독) 판정 시 end_date 및 completed 상태 자동 입력
+  if (totalPageCount !== null && totalPageCount > 0 && cp >= totalPageCount) {
     next.status = "completed";
-    if (!next.end_date) next.end_date = todayKST();
+    if (!next.end_date) {
+      next.end_date = todayKST();
+    }
+    if (!next.start_date) {
+      next.start_date = todayKST();
+    }
+  } else if (
+    prev.status === "completed" &&
+    totalPageCount !== null &&
+    cp < totalPageCount
+  ) {
+    // 완독 상태에서 페이지를 전체 페이지 미만으로 내린 경우 다시 reading으로 복귀
+    next.status = "reading";
+    next.end_date = null;
   }
 
   return next;
