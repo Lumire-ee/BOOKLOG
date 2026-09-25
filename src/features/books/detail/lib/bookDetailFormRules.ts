@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   EditableUserBookFields,
   UpdateUserBookPatch,
 } from "@/features/books/detail/lib/types";
@@ -96,8 +96,9 @@ export function applyCurrentPageChange(
     if (!next.start_date) {
       next.start_date = todayKST();
     }
-    if (next.status === "to_read") {
-      next.status = "reading";
+    next.status = "reading";
+    if (prev.status === "quit" || prev.status === "completed") {
+      next.end_date = null;
     }
   }
 
