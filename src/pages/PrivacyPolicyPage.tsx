@@ -165,7 +165,7 @@ export default function PrivacyPolicyPage() {
             있습니다.
           </p>
           <p className="typo-body-sm">
-            도서 검색 시 Google Books API 및 Naver Open API로의 검색어 전송은
+            도서 검색 시 Google Books API 및 Kakao 검색 API로의 검색어 전송은
             처리위탁이 아닌 제3자 제공 항목에 해당합니다.
           </p>
         </section>
@@ -186,7 +186,7 @@ export default function PrivacyPolicyPage() {
             </li>
             <li>
               이용자가 도서 검색 기능을 사용할 경우, 검색어가 Google Books API
-              및 Naver Open API로 전송될 수 있는 경우
+              및 Kakao 검색 API로 전송될 수 있는 경우
             </li>
           </ul>
           <p className="typo-body-sm">

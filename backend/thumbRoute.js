@@ -13,6 +13,8 @@ const ALLOW_HOSTS = [
   "shopping-phinf.pstatic.net",
   "bookthumb-phinf.pstatic.net",
   "ssl.pstatic.net",
+  "kakaocdn.net",
+  "daumcdn.net",
 ];
 
 function assertAllowedSrc(src) {

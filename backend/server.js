@@ -31,30 +31,54 @@ app.use("/api", thumbRoute);
 app.use("/api", userBookRoute);
 app.use("/api", accountRoute);
 
-// 네이버 API 프록시
+// 카카오 도서 검색 API 프록시 (네이버 책 검색 API 종료에 따른 대체)
 app.get("/api/books", async (req, res) => {
   const query = req.query.query;
+  console.log(`[백엔드 /api/books] 검색 요청 수신: query="${query}"`);
+  if (!query) {
+    return res.status(400).json({ error: "Query parameter is required" });
+  }
 
-  const url = `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(
-    query,
-  )}`;
-
-  const headers = {
-    "X-Naver-Client-Id": process.env.NAVER_CLIENT_ID,
-    "X-Naver-Client-Secret": process.env.NAVER_CLIENT_SECRET,
-  };
-
-  if (!headers["X-Naver-Client-Id"] || !headers["X-Naver-Client-Secret"]) {
+  const kakaoApiKey = process.env.KAKAO_REST_API_KEY;
+  if (!kakaoApiKey) {
+    console.error("[백엔드 /api/books] KAKAO_REST_API_KEY 미설정 오류");
     return res
       .status(500)
-      .json({ error: "NAVER_CLIENT_ID/SECRET not loaded from .env" });
+      .json({ error: "KAKAO_REST_API_KEY not loaded from .env" });
   }
+
+  const url = `https://dapi.kakao.com/v3/search/book?query=${encodeURIComponent(
+    query,
+  )}&size=30&sort=accuracy`;
+
+  const headers = {
+    Authorization: `KakaoAK ${kakaoApiKey}`,
+  };
 
   try {
     const response = await fetch(url, { headers });
     const data = await response.json();
-    res.json(data);
-  } catch {
+
+    if (!response.ok) {
+      console.error("[백엔드 /api/books] Kakao API error:", data);
+      return res.status(response.status).json(data);
+    }
+
+    const mappedItems = (data.documents || []).map((doc) => ({
+      title: doc.title,
+      author: (doc.authors || []).join(", "),
+      image: doc.thumbnail || "",
+      description: doc.contents || "",
+      publisher: doc.publisher || "",
+      isbn: doc.isbn || "",
+    }));
+
+    console.log(
+      `[백엔드 /api/books] 카카오 검색 성공: ${mappedItems.length}건 반환 (총 ${data.meta?.total_count || 0}건)`,
+    );
+    res.json({ items: mappedItems, total: data.meta?.total_count || 0 });
+  } catch (err) {
+    console.error("[백엔드 /api/books] Failed to fetch Kakao books:", err);
     res.status(500).json({ error: "Failed to fetch data" });
   }
 });

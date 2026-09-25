@@ -1,4 +1,4 @@
-﻿export type BookSource = "naver" | "google";
+export type BookSource = "kakao" | "google" | "naver";
 
 export interface SearchBook {
   title: string;

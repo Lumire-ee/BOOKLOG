@@ -4,7 +4,7 @@ export function normalizeIsbn(isbn?: string | null): string | undefined {
   return cleaned || undefined;
 }
 
-export function parseNaverIsbn(isbn?: string): string | undefined {
+export function parseKakaoIsbn(isbn?: string): string | undefined {
   if (!isbn) return undefined;
 
   const normalizedList = isbn
@@ -15,6 +15,8 @@ export function parseNaverIsbn(isbn?: string): string | undefined {
   const isbn13 = normalizedList.find((code) => code.length === 13);
   return isbn13 ?? normalizedList[0];
 }
+
+export const parseNaverIsbn = parseKakaoIsbn;
 
 export function extractIsbn(
   identifiers?: { type: string; identifier: string }[],
