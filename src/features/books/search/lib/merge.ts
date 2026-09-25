@@ -38,33 +38,30 @@ export function qualityScore(book: SearchBook): number {
 }
 
 export function mergeBooks(books: ReadonlyArray<SearchBook>): SearchBook[] {
-  const map = new Map<string, SearchBook>();
+  const map = new Map<string, { book: SearchBook; originalIndex: number }>();
 
-  for (const book of books) {
+  books.forEach((book, index) => {
     const key = generateBookKey(book);
     const existing = map.get(key);
 
     if (!existing) {
-      map.set(key, book);
-      continue;
+      map.set(key, { book, originalIndex: index });
+      return;
     }
 
-    const existingScore = qualityScore(existing);
+    const existingScore = qualityScore(existing.book);
     const candidateScore = qualityScore(book);
 
     if (candidateScore > existingScore) {
-      map.set(key, book);
+      map.set(key, { book, originalIndex: existing.originalIndex });
     }
-  }
-  return Array.from(map.values()).sort((a, b) => {
-    const titleComparison = a.title.localeCompare(b.title, undefined, {
-      sensitivity: "base",
-    });
-
-    if (titleComparison !== 0) return titleComparison;
-
-    return a.author.localeCompare(b.author, undefined, {
-      sensitivity: "base",
-    });
   });
+
+  return Array.from(map.values())
+    .sort((a, b) => {
+      const rankDiff = a.originalIndex - b.originalIndex;
+      if (rankDiff !== 0) return rankDiff;
+      return qualityScore(b.book) - qualityScore(a.book);
+    })
+    .map((item) => item.book);
 }

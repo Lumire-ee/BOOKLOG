@@ -1,6 +1,6 @@
 import type { SearchBook } from "../lib/types";
 import type { SearchOptions } from "../lib/types";
-import { searchNaverBooks } from "./naverBookApi";
+import { searchKakaoBooks } from "./kakaoBookApi";
 import { searchGoogleBooks } from "./googleBookApi";
 import {
   filterLowQuality,
@@ -9,6 +9,7 @@ import {
 } from "../lib/filters";
 import { mergeBooks } from "../lib/merge";
 import { groupByBaseTitle } from "../lib/edition";
+import { sortBooksByRelevance } from "../lib/relevance";
 
 export async function searchCombinedBooks(
   query: string,
@@ -18,17 +19,25 @@ export async function searchCombinedBooks(
     throw new Error("Search query is empty.");
   }
 
-  const results = await Promise.allSettled([
-    searchNaverBooks(query),
+  const [kakaoResult, googleResult] = await Promise.allSettled([
+    searchKakaoBooks(query),
     searchGoogleBooks(query),
   ]);
 
   const allBooks: SearchBook[] = [];
 
-  for (const result of results) {
-    if (result.status === "fulfilled") {
-      allBooks.push(...result.value);
-    }
+  if (kakaoResult.status === "fulfilled") {
+    console.log(`[통합 검색] ✅ 카카오 도서: ${kakaoResult.value.length}건 수신 완료`);
+    allBooks.push(...kakaoResult.value);
+  } else {
+    console.error("[통합 검색] ❌ 카카오 도서 검색 실패:", kakaoResult.reason);
+  }
+
+  if (googleResult.status === "fulfilled") {
+    console.log(`[통합 검색] ✅ 구글 도서: ${googleResult.value.length}건 수신 완료`);
+    allBooks.push(...googleResult.value);
+  } else {
+    console.error("[통합 검색] ❌ 구글 도서 검색 실패:", googleResult.reason);
   }
 
   const merged = mergeBooks(allBooks);
@@ -43,9 +52,9 @@ export async function searchCombinedBooks(
     options?.includeVariants,
   );
 
-  if (options?.includeVariants) {
-    return localized;
-  }
+  const baseResults = options?.includeVariants
+    ? localized
+    : groupByBaseTitle(localized);
 
-  return groupByBaseTitle(localized);
+  return sortBooksByRelevance(baseResults, query);
 }

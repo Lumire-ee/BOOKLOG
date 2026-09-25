@@ -32,9 +32,9 @@ export async function searchGoogleBooks(query: string): Promise<SearchBook[]> {
     throw new Error("구글 API 키 설정이 필요합니다.");
   }
 
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+  const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(
     query,
-  )}&key=${apiKey}`;
+  )}&maxResults=40&key=${apiKey}`;
 
   const data = await fetchJson<{ items?: GoogleBookItem[] }>(
     url,
@@ -46,15 +46,13 @@ export async function searchGoogleBooks(query: string): Promise<SearchBook[]> {
     data.items
       ?.filter((item) => {
         const title = item.volumeInfo.title ?? "";
-        const authors = item.volumeInfo.authors?.join(" ") ?? "";
-        const searchText = `${title} ${authors}`;
-
-        const normalizedsearchText = normalizeText(searchText);
-        const compactsearchText = normalizeCompactText(searchText);
-
+        if (!title.trim()) return false;
+        const compactTitle = normalizeCompactText(title);
+        const authors = (item.volumeInfo.authors || []).join("");
+        const compactAuthors = normalizeCompactText(authors);
         return (
-          normalizedsearchText.includes(normalizedQuery) ||
-          compactsearchText.includes(compactQuery)
+          compactTitle.includes(compactQuery) ||
+          compactAuthors.includes(compactQuery)
         );
       })
       .map((item) => ({

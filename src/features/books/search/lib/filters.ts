@@ -1,5 +1,4 @@
 import type { SearchBook } from "./types";
-import { isEditionVariant } from "./edition";
 
 export function filterLowQuality(
   books: ReadonlyArray<SearchBook>,
@@ -7,24 +6,20 @@ export function filterLowQuality(
   return books.filter(
     (book) =>
       Boolean(book.title?.trim()) &&
-      Boolean(book.author?.trim()) &&
-      Boolean(book.publisher?.trim()) &&
-      Boolean(book.image?.trim()),
+      Boolean(
+        book.author?.trim() ||
+        book.publisher?.trim() ||
+        book.isbn?.trim()
+      ),
   );
 }
-// google결과에 메타데이터가 부족한 경우가 많음. 대량 필터링될 위험 존재.
-// 불완전한 메타데이터 책은 뒤로 보내는것도 고려해보자
 
 export function filterEditionVariants(
   books: ReadonlyArray<SearchBook>,
-  includeVariants?: boolean,
+  _includeVariants?: boolean,
 ): SearchBook[] {
-  if (includeVariants) return [...books];
-
-  const baseExists = books.some((book) => !isEditionVariant(book.title || ""));
-  if (!baseExists) return [...books];
-
-  return books.filter((book) => !isEditionVariant(book.title || ""));
+  // 전역 삭제 대신 안전하게 통과시키며, 실제 동일 도서 판본 정리는 groupByBaseTitle에서 처리합니다.
+  return [...books];
 }
 
 export function filterForeignEditions(
