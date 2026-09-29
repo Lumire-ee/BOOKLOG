@@ -39,7 +39,7 @@ export default function ResetPasswordFields({
         <Input
           id="new-password"
           type="password"
-          className="border-border-subtitle typo-label-sm w-full rounded-md border px-3 py-2"
+          className="border-border-subtitle text-base sm:typo-label-sm w-full rounded-md border px-3 py-2"
           autoComplete="new-password"
           {...register("password", passwordRules)}
         />
@@ -63,7 +63,7 @@ export default function ResetPasswordFields({
         <Input
           id="new-password-confirm"
           type="password"
-          className="border-border-subtitle typo-label-sm w-full rounded-md border px-3 py-2"
+          className="border-border-subtitle text-base sm:typo-label-sm w-full rounded-md border px-3 py-2"
           autoComplete="new-password"
           {...register("passwordConfirm", passwordConfirmRules)}
         />
