@@ -1,4 +1,4 @@
-﻿import BookDetailForm from "./BookDetailForm";
+import BookDetailForm from "./BookDetailForm";
 import { useBookDetail } from "@/hooks/useBookDetail";
 import { toProxiedThumbnailSrc } from "@/features/books/lib/thumbnailProxy";
 import { THUMB_SIZES } from "@/shared/constants/thumbnail";
@@ -51,7 +51,7 @@ export default function BookDetailModalContent({
   if (!data) return null;
 
   return (
-    <div className="w-full min-w-0 space-y-4">
+    <div className="flex w-full min-w-0 flex-1 flex-col space-y-4">
       <div className="flex gap-10 px-3">
         {data.book.thumbnail ? (
           <img

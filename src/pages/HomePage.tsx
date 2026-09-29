@@ -1,4 +1,4 @@
-﻿import HomeLayout from "@/layouts/HomeLayout";
+import HomeLayout from "@/layouts/HomeLayout";
 import HomeHeader from "@/features/home/components/HomeHeader";
 import SearchWidget from "@/features/books/search/components/SearchWidget";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -7,13 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { Logout } from "@/features/auth/api/authApi";
 import { useToast } from "@/hooks/useToast";
 import type { SearchBook } from "@/features/books/search/lib/types";
-import { useBookDetailModalStore } from "@/features/books/detail/store/useBookDetailModalStore";
+import { useBookDetailNavigation } from "@/features/books/detail/hooks/useBookDetailNavigation";
 import { useUserBooks } from "@/hooks/useUserBooks";
 import HomeBookSection from "@/features/home/components/HomeBookSection";
 import HomeLibrarySection from "@/features/home/components/HomeLibrarySection";
 
 export default function HomePage() {
-  const openBookDetail = useBookDetailModalStore((state) => state.open);
+  const { openBook: openBookDetail } = useBookDetailNavigation();
   const { registerBookToast } = useToast();
 
   const { user, loading } = useAuth();
