@@ -1,4 +1,4 @@
-﻿import BookListRow from "@/features/books/components/BookListRow";
+import BookListRow from "@/features/books/components/BookListRow";
 import type { UserBookWithInfo } from "@/shared/types/db";
 import type { ReactNode } from "react";
 import ReadingBookCard from "./ReadingBookCard";

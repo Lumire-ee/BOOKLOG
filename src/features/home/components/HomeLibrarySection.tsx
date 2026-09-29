@@ -241,20 +241,11 @@ export default function HomeLibrarySection({
       return badge ? <div className="flex items-center">{badge}</div> : null;
     }
 
-    return (
-      <div className="flex shrink-0 items-center gap-1.5">
+    return badge ? (
+      <div className="flex shrink-0 items-center">
         {badge}
-        <div className="sm:hidden">
-          <BookItemMenu
-            bookTitle={item.book.title}
-            onEdit={() => onOpenBook(item.id)}
-            onDelete={() => removeBook(item.id)}
-            isDeleting={isSingleDeleting && deletingBookId === item.id}
-            triggerClassName="pointer-events-auto opacity-100"
-          />
-        </div>
       </div>
-    );
+    ) : null;
   }
 
   function renderBookRow(item: UserBookWithInfo) {
